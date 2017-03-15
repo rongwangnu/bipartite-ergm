@@ -1,0 +1,62 @@
+library(sna)
+library(network)
+library(statnet)
+library(foreign)
+library(ergm)
+library(ergm.userterms)
+
+#set work directory and read node/tie files
+
+#load network data
+net <- read.csv("2modematrix.csv",head=TRUE) #943obs, 2097 variables
+
+#define network file
+teamnet <- network(net, directed=FALSE, loops=FALSE, bipartite=TRUE, matrix.type="bipartite")
+#5618 edges
+#3040 vertices
+#plot(teamnet)
+
+#load attribute data
+Attributes <- read.csv("attributes.csv",head=TRUE) #3043 obs, 40 variables
+Attributes$type<-as.character(Attributes$type)#1 as team and 2 as user
+Attributes$Country<-as.character(Attributes$Country)
+Attributes$Region<-as.character(Attributes$Region)
+Attributes$winner<-as.numeric(Attributes$winner)
+Attributes$wideas<-as.numeric(Attributes$wideas)
+Attributes$wprojects<-as.numeric(Attributes$wprojects)
+Attributes$emp<-as.factor(Attributes$emp)
+Attributes$Tenure<-as.numeric(Attributes$Tenure)
+Attributes$research<-as.numeric(Attributes$research)
+Attributes$idea<-as.numeric(Attributes$idea)
+Attributes$eva<-as.numeric(Attributes$eva)
+Attributes$collaboration<-as.numeric(Attributes$collaboration)
+Attributes$all<-as.numeric(Attributes$all)
+Attributes$usuk<-as.numeric(Attributes$usuk)
+Attributes$us<-as.numeric(Attributes$us)
+Attributes$tleader<-as.numeric(Attributes$tleader)
+Attributes$winning<-as.numeric(Attributes$winning)
+Attributes$size<-as.numeric(Attributes$size)
+Attributes$stage<-as.numeric(Attributes$stage)
+Attributes$crossprojects<-as.numeric(Attributes$crossprojects)
+Attributes$meantenure<-as.numeric(Attributes$meantenure)
+
+#assign network node attirbutes
+teamnet%v%"Type" <- Attributes$type
+teamnet%v%"Country" <- Attributes$Country
+teamnet%v%"Region" <- Attributes$Region
+teamnet%v%"location" <- Attributes$usuk
+teamnet%v%"winner" <- Attributes$winner
+teamnet%v%"wideas" <- Attributes$wideas
+teamnet%v%"wprojects" <- Attributes$wprojects
+teamnet%v%"Tenure" <- Attributes$Tenure
+teamnet%v%"all" <- Attributes$all
+teamnet%v%"tleader" <- Attributes$tleader
+teamnet%v%"stage" <- Attributes$stage
+teamnet%v%"crossproject" <- Attributes$crossproject
+teamnet%v%"teamsize" <- Attributes$size
+teamnet%v%"winning" <- Attributes$winning
+
+#basedline model#
+fit.1 <- ergm(teamnet ~ edges+b1cov("crossproject")+b1cov("stage")+b1cov("winning")
+              +b2cov("all")+b2cov("Tenure")+b2cov("location")+b2cov("winner"))
+summary(fit.1)
