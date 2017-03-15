@@ -1,0 +1,40 @@
+#### March8-9th ####
+#### bipartite ergm data prep####
+#### RW ####
+#### all team ids are from 1-946 and all user ids starting from 947
+### scripst for converting edgelist to adj matrix ###
+
+library(sna)
+library(network)
+library(statnet)
+library(foreign)
+library(ergm)
+library(ergm.userterms)
+library(Matrix)
+library(igraph)
+
+#set work directory and read node/tie files
+
+#read the edgelist
+#dat <- read.csv(file="edgelist_numbered.csv",header=T, as.is=T) #4686 obs of 2 variables
+#two edges with N/A recoded with correct member id
+#n of teams 946
+#n of members 2100
+
+#define the network data
+#dat=as.matrix(dat)
+
+#row to be teams and column to be users
+A <- spMatrix(nrow=length(unique(dat[,1])),
+              ncol=length(unique(dat[,2])),
+              i = as.numeric(factor(dat[,1])),
+              j = as.numeric(factor(dat[,2])),
+              x = rep(1, length(as.numeric(dat[,1]))) )
+row.names(A) <- levels(factor(dat[,1]))
+colnames(A) <- levels(factor(dat[,2]))
+A
+
+summary(A)
+matrix <- as.matrix(A)
+#save the new file
+write.csv(matrix,"2modematrix.csv")
