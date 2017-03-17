@@ -1,0 +1,8 @@
+###check goodness of fit
+fit1.gof <- gof(fit1, degree) #for undirected network. use idegree and odegree for directed network
+#error message examples
+#error in simulate.formula(object,nsim=1,coef=coef,constraints=constraints,:Illegal value of coef passed to simulate.formula
+#revise the code
+fit1.gof <- gof(fit1,degree,coef=NULL)
+fit1.gof
+plot(fit1.gof)
